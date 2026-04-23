@@ -54,7 +54,7 @@ export default function TodoWidget() {
   const done = todos.filter(t => t.completed).length
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col h-full">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col h-full" style={{ padding: '32px' }}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <CheckSquare className="w-5 h-5 text-purple-400" />
@@ -63,12 +63,12 @@ export default function TodoWidget() {
         <span className="text-xs text-slate-400">{done}/{todos.length} 완료</span>
       </div>
 
-      <form onSubmit={handleAdd} className="flex gap-2 mb-4">
+      <form onSubmit={handleAdd} className="flex gap-2" style={{ marginBottom: '20px', marginTop: '8px' }}>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="새 할 일 추가..."
-          className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
+          placeholder="할 일 추가"
+          className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-3 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
         />
         <button
           type="submit"

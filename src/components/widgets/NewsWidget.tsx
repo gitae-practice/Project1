@@ -51,13 +51,13 @@ export default function NewsWidget() {
   })
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col h-full" style={{ padding: '32px' }}>
+      <div className="flex items-center gap-3" style={{ marginBottom: '20px' }}>
         <Newspaper className="w-5 h-5 text-green-400" />
         <h2 className="text-white font-semibold">뉴스</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-1 min-h-0">
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {isLoading && (
           <div className="flex items-center justify-center py-8">
             <div className="w-6 h-6 border-2 border-slate-500 border-t-green-400 rounded-full animate-spin" />
