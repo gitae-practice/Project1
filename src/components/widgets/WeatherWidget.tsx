@@ -1,86 +1,113 @@
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Cloud, Sun, CloudRain, CloudSnow, Wind, Droplets } from 'lucide-react'
+import { Cloud, Sun, CloudRain, CloudSnow, Wind, Droplets, CloudLightning, MapPin } from 'lucide-react'
 
 interface WeatherData {
-  name: string
-  main: { temp: number; feels_like: number; humidity: number }
-  weather: { main: string; description: string }[]
-  wind: { speed: number }
+  current: {
+    temperature_2m: number
+    relative_humidity_2m: number
+    wind_speed_10m: number
+    weather_code: number
+    apparent_temperature: number
+  }
 }
 
-const API_KEY = import.meta.env.VITE_WEATHER_API_KEY
-const CITY = 'Seoul'
-
-async function fetchWeather(): Promise<WeatherData> {
-  const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric&lang=kr`
-  )
-  if (!res.ok) throw new Error('날씨 정보를 가져올 수 없습니다')
-  return res.json()
+interface GeoData {
+  display_name: string
+  address: { city?: string; county?: string; state?: string }
 }
 
-function WeatherIcon({ main, className }: { main: string; className?: string }) {
-  const props = { className: className ?? 'w-12 h-12' }
-  if (main === 'Rain' || main === 'Drizzle') return <CloudRain {...props} />
-  if (main === 'Snow') return <CloudSnow {...props} />
-  if (main === 'Clear') return <Sun {...props} />
-  if (main === 'Wind') return <Wind {...props} />
-  return <Cloud {...props} />
+function getWeatherInfo(code: number): { label: string; Icon: typeof Sun } {
+  if (code === 0) return { label: '맑음', Icon: Sun }
+  if (code <= 3) return { label: '구름 조금', Icon: Cloud }
+  if (code <= 48) return { label: '안개', Icon: Cloud }
+  if (code <= 57) return { label: '이슬비', Icon: CloudRain }
+  if (code <= 67) return { label: '비', Icon: CloudRain }
+  if (code <= 77) return { label: '눈', Icon: CloudSnow }
+  if (code <= 82) return { label: '소나기', Icon: CloudRain }
+  if (code <= 94) return { label: '뇌우', Icon: CloudLightning }
+  return { label: '흐림', Icon: Cloud }
+}
+
+function useGeolocation() {
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null)
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      pos => setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      () => setCoords({ lat: 37.5665, lon: 126.978 })
+    )
+  }, [])
+
+  return { coords }
 }
 
 export default function WeatherWidget() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['weather'],
-    queryFn: fetchWeather,
+  const { coords } = useGeolocation()
+
+  const { data: weather, isLoading } = useQuery<WeatherData>({
+    queryKey: ['weather', coords],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${coords!.lat}&longitude=${coords!.lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit=ms`
+      )
+      return res.json()
+    },
+    enabled: !!coords,
     staleTime: 1000 * 60 * 10,
-    retry: false,
   })
+
+  const { data: geo } = useQuery<GeoData>({
+    queryKey: ['geo', coords],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${coords!.lat}&lon=${coords!.lon}&format=json`
+      )
+      return res.json()
+    },
+    enabled: !!coords,
+    staleTime: Infinity,
+  })
+
+  const cityName = geo?.address.city ?? geo?.address.county ?? geo?.address.state ?? '내 위치'
+  const weatherInfo = weather ? getWeatherInfo(weather.current.weather_code) : null
 
   return (
     <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 flex flex-col justify-between h-full">
-      <p className="text-slate-400 text-sm font-medium">날씨</p>
+      <div className="flex items-center justify-between">
+        <p className="text-slate-400 text-sm font-medium">날씨</p>
+        <div className="flex items-center gap-1 text-slate-500 text-xs">
+          <MapPin className="w-3 h-3" />
+          {cityName}
+        </div>
+      </div>
 
-      {isLoading && (
+      {(isLoading || !coords) && (
         <div className="flex-1 flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-slate-500 border-t-purple-400 rounded-full animate-spin" />
         </div>
       )}
 
-      {error && !import.meta.env.VITE_WEATHER_API_KEY && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center gap-2">
-          <Cloud className="w-10 h-10 text-slate-600" />
-          <p className="text-slate-500 text-sm">API 키를 설정해주세요</p>
-          <p className="text-slate-600 text-xs">openweathermap.org</p>
-        </div>
-      )}
-
-      {error && import.meta.env.VITE_WEATHER_API_KEY && (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-slate-500 text-sm">날씨 정보를 불러올 수 없습니다</p>
-        </div>
-      )}
-
-      {data && (
+      {weather && weatherInfo && (
         <>
           <div className="flex items-center justify-between mt-2">
             <div>
-              <p className="text-5xl font-bold text-white">{Math.round(data.main.temp)}°</p>
-              <p className="text-slate-400 text-sm mt-1 capitalize">{data.weather[0].description}</p>
-              <p className="text-slate-500 text-xs mt-0.5">{data.name}</p>
+              <p className="text-5xl font-bold text-white">{Math.round(weather.current.temperature_2m)}°</p>
+              <p className="text-slate-400 text-sm mt-1">{weatherInfo.label}</p>
             </div>
-            <WeatherIcon main={data.weather[0].main} className="w-14 h-14 text-blue-300" />
+            <weatherInfo.Icon className="w-14 h-14 text-blue-300" />
           </div>
           <div className="flex gap-4 mt-4 pt-4 border-t border-slate-700/50">
             <div className="flex items-center gap-1.5 text-slate-400 text-xs">
               <Droplets className="w-3.5 h-3.5 text-blue-400" />
-              습도 {data.main.humidity}%
+              습도 {weather.current.relative_humidity_2m}%
             </div>
             <div className="flex items-center gap-1.5 text-slate-400 text-xs">
               <Wind className="w-3.5 h-3.5 text-slate-400" />
-              {data.wind.speed}m/s
+              {weather.current.wind_speed_10m}m/s
             </div>
-            <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-              체감 {Math.round(data.main.feels_like)}°
+            <div className="text-slate-400 text-xs">
+              체감 {Math.round(weather.current.apparent_temperature)}°
             </div>
           </div>
         </>
