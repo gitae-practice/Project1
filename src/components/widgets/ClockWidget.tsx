@@ -30,7 +30,7 @@ export default function ClockWidget() {
   const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col items-center justify-center gap-8">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col items-center justify-center" style={{ padding: '32px', gap: '32px' }}>
       <div className="flex bg-slate-700/50 rounded-xl p-1 gap-1">
         {(['clock', 'timer'] as const).map(t => (
           <button
