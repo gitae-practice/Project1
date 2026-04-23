@@ -1,37 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import { Newspaper, ExternalLink } from 'lucide-react'
 
-interface NewsItem {
+interface NaverNewsItem {
   title: string
   link: string
+  originallink: string
+  description: string
   pubDate: string
-  source: string
 }
 
-async function fetchNews(): Promise<NewsItem[]> {
-  const feeds = [
-    { url: 'https://feeds.bbci.co.uk/korean/rss.xml', source: 'BBC 코리아' },
-    { url: 'https://rss.joins.com/joins_news_list.xml', source: '중앙일보' },
-  ]
+function stripHtml(str: string) {
+  return str.replace(/<[^>]*>/g, '')
+}
 
-  const results = await Promise.allSettled(
-    feeds.map(async ({ url, source }) => {
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
-      const json = await res.json()
-      return (json.items ?? []).slice(0, 5).map((item: { title: string; link: string; pubDate: string }) => ({
-        title: item.title,
-        link: item.link,
-        pubDate: item.pubDate,
-        source,
-      }))
-    })
-  )
-
-  return results
-    .filter((r): r is PromiseFulfilledResult<NewsItem[]> => r.status === 'fulfilled')
-    .flatMap(r => r.value)
-    .sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
-    .slice(0, 10)
+async function fetchNaverNews(): Promise<NaverNewsItem[]> {
+  const res = await fetch('/api/news?query=속보&display=10&sort=date')
+  if (!res.ok) throw new Error('news fetch failed')
+  const json = await res.json()
+  return (json.items ?? []) as NaverNewsItem[]
 }
 
 function timeAgo(dateStr: string) {
@@ -45,8 +31,8 @@ function timeAgo(dateStr: string) {
 
 export default function NewsWidget() {
   const { data: news = [], isLoading, error } = useQuery({
-    queryKey: ['news'],
-    queryFn: fetchNews,
+    queryKey: ['naver-news'],
+    queryFn: fetchNaverNews,
     staleTime: 1000 * 60 * 15,
   })
 
@@ -54,7 +40,7 @@ export default function NewsWidget() {
     <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col h-full" style={{ padding: '32px' }}>
       <div className="flex items-center gap-3" style={{ marginBottom: '20px' }}>
         <Newspaper className="w-5 h-5 text-green-400" />
-        <h2 className="text-white font-semibold">뉴스</h2>
+        <h2 className="text-white font-semibold">네이버 뉴스</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -69,17 +55,17 @@ export default function NewsWidget() {
         {news.map((item, i) => (
           <a
             key={i}
-            href={item.link}
+            href={item.originallink || item.link}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-start gap-2 group p-2.5 rounded-xl hover:bg-slate-700/40 transition-colors"
           >
             <div className="flex-1 min-w-0">
               <p className="text-slate-200 text-sm leading-snug group-hover:text-white transition-colors line-clamp-2">
-                {item.title}
+                {stripHtml(item.title)}
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-green-500/70">{item.source}</span>
+                <span className="text-xs text-green-500/70">네이버뉴스</span>
                 <span className="text-xs text-slate-600">·</span>
                 <span className="text-xs text-slate-500">{timeAgo(item.pubDate)}</span>
               </div>
