@@ -73,7 +73,7 @@ export default function WeatherWidget() {
   const weatherInfo = weather ? getWeatherInfo(weather.current.weather_code) : null
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 flex flex-col justify-between h-full">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between">
         <p className="text-slate-400 text-sm font-medium">날씨</p>
         <div className="flex items-center gap-1 text-slate-500 text-xs">

@@ -51,8 +51,8 @@ export default function NewsWidget() {
   })
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 flex flex-col h-full">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col h-full">
+      <div className="flex items-center gap-3 mb-6">
         <Newspaper className="w-5 h-5 text-green-400" />
         <h2 className="text-white font-semibold">뉴스</h2>
       </div>

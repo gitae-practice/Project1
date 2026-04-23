@@ -31,12 +31,12 @@ export default function ClockWidget() {
 
   return (
     <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col items-center justify-center gap-8">
-      <div className="flex bg-slate-700/50 rounded-xl p-1">
+      <div className="flex bg-slate-700/50 rounded-xl p-1 gap-1">
         {(['clock', 'timer'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-8 py-2 rounded-lg text-sm font-medium transition-all ${
               tab === t ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
             }`}
           >
