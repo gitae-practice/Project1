@@ -10,8 +10,8 @@ export default function Dashboard({ user }: { user: User }) {
   const handleLogout = () => supabase.auth.signOut()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 md:p-10">
-      <header className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-8 py-8 md:px-16 md:py-12">
+      <header className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-3">
           <LayoutDashboard className="w-5 h-5 text-purple-400" />
           <span className="text-white font-semibold">My Dashboard</span>
@@ -28,7 +28,7 @@ export default function Dashboard({ user }: { user: User }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 auto-rows-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 auto-rows-auto">
         <div className="md:col-span-2 xl:col-span-2">
           <ClockWidget />
         </div>
