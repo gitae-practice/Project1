@@ -42,7 +42,7 @@ export default function AuthPage() {
         <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8">
           <div className="flex bg-slate-700/50 rounded-xl p-1 mb-6">
             <button
-              onClick={() => setMode('login')}
+              onClick={() => { setMode('login'); setEmail(''); setPassword(''); setError(''); setMessage('') }}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 mode === 'login'
                   ? 'bg-purple-600 text-white shadow'
@@ -52,7 +52,7 @@ export default function AuthPage() {
               로그인
             </button>
             <button
-              onClick={() => setMode('signup')}
+              onClick={() => { setMode('signup'); setEmail(''); setPassword(''); setError(''); setMessage('') }}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                 mode === 'signup'
                   ? 'bg-purple-600 text-white shadow'

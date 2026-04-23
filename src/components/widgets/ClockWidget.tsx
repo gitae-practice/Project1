@@ -30,13 +30,13 @@ export default function ClockWidget() {
   const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 flex flex-col items-center justify-center gap-4">
+    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 flex flex-col items-center justify-center gap-8">
       <div className="flex bg-slate-700/50 rounded-xl p-1">
         {(['clock', 'timer'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
               tab === t ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -46,30 +46,30 @@ export default function ClockWidget() {
       </div>
 
       {tab === 'clock' ? (
-        <>
+        <div className="flex flex-col items-center gap-3">
           <p className="text-slate-400 text-sm">{dateStr}</p>
           <p className="text-5xl font-bold text-white tracking-tight font-mono">{timeStr}</p>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="flex flex-col items-center gap-6">
           <p className="text-5xl font-bold text-white tracking-tight font-mono">{timerStr}</p>
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               onClick={() => setRunning(r => !r)}
-              className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-sm transition-colors"
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl text-sm transition-colors"
             >
               {running ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               {running ? '일시정지' : '시작'}
             </button>
             <button
               onClick={reset}
-              className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-xl text-sm transition-colors"
+              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 px-5 py-2.5 rounded-xl text-sm transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               초기화
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   )
