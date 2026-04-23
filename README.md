@@ -1,6 +1,6 @@
-# My Dashboard
+# Personal Dashboard
 
-개인 연습을 위한 커스텀 대시보드 웹앱입니다.
+개발 연습을 위한 커스텀 대시보드 웹앱
 
 ## 기능
 
