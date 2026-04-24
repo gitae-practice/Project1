@@ -4,6 +4,14 @@ import { supabase } from '../../lib/supabase'
 import { Plus, Trash2, CheckSquare } from 'lucide-react'
 import type { Todo } from '../../types'
 
+function formatDate(iso: string) {
+  const d = new Date(iso)
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}/${mm}/${dd}`
+}
+
 async function fetchTodos() {
   const { data, error } = await supabase
     .from('todos')
@@ -96,12 +104,20 @@ export default function TodoWidget() {
                 onChange={() => toggleMutation.mutate({ id: todo.id, completed: !todo.completed })}
                 className="w-4 h-4 accent-purple-500 cursor-pointer flex-shrink-0"
               />
-              <span className={`flex-1 text-sm ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'}`}>
-                {todo.title}
-              </span>
+              <div className="flex-1 min-w-0">
+                <span className={`block text-sm ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'}`}>
+                  {todo.title}
+                </span>
+                <span className="block text-xs text-slate-500 mt-0.5">
+                  {formatDate(todo.created_at)}
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                    · 수정 {formatDate(todo.updated_at)}
+                  </span>
+                </span>
+              </div>
               <button
                 onClick={() => deleteMutation.mutate(todo.id)}
-                className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all"
+                className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all flex-shrink-0"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

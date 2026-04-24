@@ -4,7 +4,8 @@ create table public.todos (
   user_id uuid references auth.users(id) on delete cascade not null,
   title text not null,
   completed boolean default false not null,
-  created_at timestamptz default now() not null
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
 );
 
 alter table public.todos enable row level security;
@@ -57,4 +58,8 @@ $$ language plpgsql;
 
 create trigger notes_updated_at
   before update on public.notes
+  for each row execute function public.handle_updated_at();
+
+create trigger todos_updated_at
+  before update on public.todos
   for each row execute function public.handle_updated_at();
