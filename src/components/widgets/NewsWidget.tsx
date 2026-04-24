@@ -10,7 +10,7 @@ interface NaverNewsItem {
 }
 
 function stripHtml(str: string) {
-  return str.replace(/<[^>]*>/g, '')
+  return str.replace(/<[^>]*>/g, '').replace(/&quot;|&amp;|&lt;|&gt;|&apos;|&#[0-9]+;/g, '')
 }
 
 async function fetchNaverNews(): Promise<NaverNewsItem[]> {
