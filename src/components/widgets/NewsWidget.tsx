@@ -37,20 +37,28 @@ export default function NewsWidget() {
   })
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col h-full" style={{ padding: '32px' }}>
-      <div className="flex items-center gap-3" style={{ marginBottom: '20px' }}>
-        <Newspaper className="w-5 h-5 text-green-400" />
-        <h2 className="text-white font-semibold">네이버 뉴스</h2>
+    <div
+      className="rounded-2xl flex flex-col h-full"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(20px)',
+        padding: '28px',
+      }}
+    >
+      <div className="flex items-center gap-2.5 mb-5">
+        <Newspaper className="w-4 h-4 text-emerald-400" />
+        <h2 className="text-white text-sm font-semibold">네이버 뉴스</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {isLoading && (
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-slate-500 border-t-green-400 rounded-full animate-spin" />
+            <div className="w-5 h-5 rounded-full animate-spin" style={{ border: '2px solid rgba(255,255,255,0.06)', borderTopColor: '#34d399' }} />
           </div>
         )}
         {error && (
-          <p className="text-slate-500 text-sm text-center py-4">뉴스를 불러올 수 없습니다</p>
+          <p className="text-zinc-700 text-sm text-center py-4">뉴스를 불러올 수 없습니다</p>
         )}
         {news.map((item, i) => (
           <a
@@ -58,19 +66,28 @@ export default function NewsWidget() {
             href={item.originallink || item.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-2 group p-2.5 rounded-xl hover:bg-slate-700/40 transition-colors"
+            className="flex items-start gap-3 group p-2.5 rounded-xl transition-all"
+            style={{ border: '1px solid transparent' }}
+            onMouseOver={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.035)'
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.borderColor = 'transparent'
+            }}
           >
             <div className="flex-1 min-w-0">
-              <p className="text-slate-200 text-sm leading-snug group-hover:text-white transition-colors line-clamp-2">
+              <p className="text-zinc-300 text-sm leading-snug group-hover:text-white transition-colors line-clamp-2">
                 {stripHtml(item.title)}
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-green-500/70">네이버뉴스</span>
-                <span className="text-xs text-slate-600">·</span>
-                <span className="text-xs text-slate-500">{timeAgo(item.pubDate)}</span>
+                <span className="text-xs text-emerald-500/60">네이버뉴스</span>
+                <span className="text-zinc-800 text-xs">·</span>
+                <span className="text-xs text-zinc-700">{timeAgo(item.pubDate)}</span>
               </div>
             </div>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400 flex-shrink-0 mt-0.5 transition-colors" />
+            <ExternalLink className="w-3 h-3 text-zinc-800 group-hover:text-zinc-500 flex-shrink-0 mt-1 transition-colors" />
           </a>
         ))}
       </div>

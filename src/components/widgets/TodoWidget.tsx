@@ -4,6 +4,12 @@ import { supabase } from '../../lib/supabase'
 import { Plus, Trash2, CheckSquare, Pencil, Check } from 'lucide-react'
 import type { Todo } from '../../types'
 
+const CARD_STYLE = {
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.07)',
+  backdropFilter: 'blur(20px)',
+}
+
 function formatDate(iso: string) {
   const d = new Date(iso)
   const yyyy = d.getFullYear()
@@ -88,47 +94,65 @@ export default function TodoWidget() {
   const done = todos.filter(t => t.completed).length
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col h-full" style={{ padding: '32px' }}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <CheckSquare className="w-5 h-5 text-purple-400" />
-          <h2 className="text-white font-semibold">할 일</h2>
+    <div className="rounded-2xl flex flex-col h-full" style={{ ...CARD_STYLE, padding: '28px' }}>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2.5">
+          <CheckSquare className="w-4 h-4 text-violet-400" />
+          <h2 className="text-white text-sm font-semibold">할 일</h2>
         </div>
-        <span className="text-xs text-slate-400">{done}/{todos.length} 완료</span>
+        <span className="text-xs text-zinc-700">{done}/{todos.length} 완료</span>
       </div>
 
-      <form onSubmit={handleAdd} className="flex gap-2" style={{ marginBottom: '20px', marginTop: '8px' }}>
+      <form onSubmit={handleAdd} className="flex gap-2 mb-4">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="할 일 추가"
-          className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-3 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
+          className="flex-1 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-700 focus:outline-none transition-all"
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+          onFocus={e => e.target.style.borderColor = 'rgba(139,92,246,0.45)'}
+          onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
         />
         <button
           type="submit"
           disabled={addMutation.isPending}
-          className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl px-3 py-2 transition-colors"
+          className="rounded-xl px-3 py-2 text-white disabled:opacity-40 transition-all"
+          style={{ background: 'rgba(124,58,237,0.85)' }}
+          onMouseOver={e => e.currentTarget.style.background = 'rgba(124,58,237,1)'}
+          onMouseOut={e => e.currentTarget.style.background = 'rgba(124,58,237,0.85)'}
         >
           <Plus className="w-4 h-4" />
         </button>
       </form>
 
-      <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+      <div className="flex-1 overflow-y-auto min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {isLoading ? (
-          <p className="text-slate-500 text-sm text-center py-4">로딩 중...</p>
+          <p className="text-zinc-700 text-sm text-center py-4">로딩 중...</p>
         ) : todos.length === 0 ? (
-          <p className="text-slate-500 text-sm text-center py-4">할 일이 없습니다</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-2 py-8">
+            <CheckSquare className="w-8 h-8 text-zinc-800" />
+            <p className="text-zinc-700 text-sm">할 일이 없습니다</p>
+          </div>
         ) : (
           todos.map(todo => (
             <div
               key={todo.id}
-              className="flex items-center gap-3 group bg-slate-700/30 hover:bg-slate-700/50 rounded-xl px-3 py-2.5 transition-colors"
+              className="flex items-center gap-3 group rounded-xl px-3 py-2.5 transition-all cursor-default"
+              style={{ border: '1px solid transparent' }}
+              onMouseOver={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.035)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = 'transparent'
+              }}
             >
               <input
                 type="checkbox"
                 checked={todo.completed}
                 onChange={() => toggleMutation.mutate({ id: todo.id, completed: !todo.completed })}
-                className="w-4 h-4 accent-purple-500 cursor-pointer flex-shrink-0"
+                className="w-3.5 h-3.5 accent-violet-500 cursor-pointer flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
                 {editingId === todo.id ? (
@@ -141,14 +165,15 @@ export default function TodoWidget() {
                       if (e.key === 'Escape') setEditingId(null)
                     }}
                     onBlur={() => handleEditSave(todo.id)}
-                    className="w-full bg-slate-600/50 border border-purple-500/50 rounded-lg px-2 py-0.5 text-sm text-white focus:outline-none"
+                    className="w-full rounded-lg px-2 py-0.5 text-sm text-white focus:outline-none"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(139,92,246,0.4)' }}
                   />
                 ) : (
-                  <span className={`block text-sm ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'}`}>
+                  <span className={`block text-sm ${todo.completed ? 'line-through text-zinc-700' : 'text-zinc-200'}`}>
                     {todo.title}
                   </span>
                 )}
-                <span className="block text-xs text-slate-500 mt-0.5">
+                <span className="block text-xs text-zinc-700 mt-0.5">
                   {formatDate(todo.created_at)}
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                     · 수정 {formatDate(todo.updated_at)}
@@ -158,21 +183,21 @@ export default function TodoWidget() {
               {editingId === todo.id ? (
                 <button
                   onClick={() => handleEditSave(todo.id)}
-                  className="text-purple-400 hover:text-purple-300 transition-all flex-shrink-0"
+                  className="text-violet-400 hover:text-violet-300 transition-all flex-shrink-0"
                 >
                   <Check className="w-3.5 h-3.5" />
                 </button>
               ) : (
                 <button
                   onClick={() => handleEditStart(todo)}
-                  className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-purple-400 transition-all flex-shrink-0"
+                  className="opacity-0 group-hover:opacity-100 text-zinc-700 hover:text-violet-400 transition-all flex-shrink-0"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
               )}
               <button
                 onClick={() => deleteMutation.mutate(todo.id)}
-                className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 text-zinc-700 hover:text-red-400 transition-all flex-shrink-0"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

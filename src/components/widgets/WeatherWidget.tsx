@@ -73,10 +73,18 @@ export default function WeatherWidget() {
   const weatherInfo = weather ? getWeatherInfo(weather.current.weather_code) : null
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl flex flex-col justify-between h-full" style={{ padding: '32px' }}>
+    <div
+      className="rounded-2xl flex flex-col justify-between h-full"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(20px)',
+        padding: '28px',
+      }}
+    >
       <div className="flex items-center justify-between">
-        <p className="text-slate-400 text-sm font-medium">날씨</p>
-        <div className="flex items-center gap-1 text-slate-500 text-xs">
+        <p className="text-zinc-500 text-xs font-medium tracking-wider uppercase" style={{ letterSpacing: '0.1em' }}>날씨</p>
+        <div className="flex items-center gap-1 text-zinc-600 text-xs">
           <MapPin className="w-3 h-3" />
           {cityName}
         </div>
@@ -84,29 +92,34 @@ export default function WeatherWidget() {
 
       {(isLoading || !coords) && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-slate-500 border-t-purple-400 rounded-full animate-spin" />
+          <div className="w-5 h-5 rounded-full animate-spin" style={{ border: '2px solid rgba(255,255,255,0.06)', borderTopColor: '#38bdf8' }} />
         </div>
       )}
 
       {weather && weatherInfo && (
         <>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-end justify-between mt-4">
             <div>
-              <p className="text-5xl font-bold text-white">{Math.round(weather.current.temperature_2m)}°</p>
-              <p className="text-slate-400 text-sm mt-1">{weatherInfo.label}</p>
+              <p className="font-bold text-white" style={{ fontSize: '64px', lineHeight: 1 }}>
+                {Math.round(weather.current.temperature_2m)}°
+              </p>
+              <p className="text-zinc-500 text-sm mt-2">{weatherInfo.label}</p>
             </div>
-            <weatherInfo.Icon className="w-14 h-14 text-blue-300" />
+            <weatherInfo.Icon className="w-16 h-16 text-sky-400/70 mb-1" />
           </div>
-          <div className="flex gap-4 mt-4 pt-4 border-t border-slate-700/50">
-            <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-              <Droplets className="w-3.5 h-3.5 text-blue-400" />
+          <div
+            className="flex gap-5 mt-5 pt-4"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
+              <Droplets className="w-3.5 h-3.5 text-sky-400/70" />
               습도 {weather.current.relative_humidity_2m}%
             </div>
-            <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-              <Wind className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
+              <Wind className="w-3.5 h-3.5 text-zinc-600" />
               {weather.current.wind_speed_10m}m/s
             </div>
-            <div className="text-slate-400 text-xs">
+            <div className="text-zinc-500 text-xs">
               체감 {Math.round(weather.current.apparent_temperature)}°
             </div>
           </div>

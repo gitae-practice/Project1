@@ -26,8 +26,8 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-slate-600 border-t-purple-400 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full animate-spin" style={{ border: '2px solid rgba(255,255,255,0.08)', borderTopColor: '#7c3aed' }} />
       </div>
     )
   }
